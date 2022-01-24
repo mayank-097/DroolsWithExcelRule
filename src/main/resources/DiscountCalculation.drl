@@ -1,0 +1,76 @@
+
+dialect "java"
+
+import App.Entity.Order
+import java.util.Date
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.ResultSet
+import java.sql.Statement
+import java.sql.PreparedStatement
+
+//global App.Entity.Order order;
+//global App.Entity.Order myOrder;
+
+
+function  String ConnectDB(String ConnectionClass,String url,String user, String password , String cardType) {
+
+    /*Class.forName(ConnectionClass);
+    java.sql.Connection con = DriverManager.getConnection(url, user, password);
+    Statement st = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                       ResultSet.CONCUR_UPDATABLE);
+    ResultSet rs = st.executeQuery("select * from discount_calculation");
+    rs.first();
+  return rs.getString("card_type");*/
+
+  String query = "select * from drools.discount_calculation where card_type = ?";
+      Class.forName(ConnectionClass);
+      java.sql.Connection con = DriverManager.getConnection(url, user, password);
+      PreparedStatement selectrule = con.prepareStatement(query,ResultSet.TYPE_SCROLL_SENSITIVE,
+                                                                                        ResultSet.CONCUR_UPDATABLE);
+      selectrule.setString(1,cardType);
+      ResultSet rs = selectrule.executeQuery();
+      rs.first();
+
+      return rs.getString("card_type");
+
+
+
+}
+
+function int DBCollect(String ConnectionClass,String url,String user, String password , String cardType ) {
+
+   String query = "select * from drools.discount_calculation where card_type = ?";
+         Class.forName(ConnectionClass);
+         java.sql.Connection con = DriverManager.getConnection(url, user, password);
+         PreparedStatement selectrule = con.prepareStatement(query,ResultSet.TYPE_SCROLL_SENSITIVE,
+                                                                                           ResultSet.CONCUR_UPDATABLE);
+         selectrule.setString(1,cardType);
+         ResultSet rs = selectrule.executeQuery();
+         rs.first();
+
+         /*myOrder dbOrder = new myOrder();
+         myOrder.discount = rs.getInt("discount");
+         myOrder.cardType = rs.getString("card_type");
+         myOrder.name = rs.getString("name");
+         myOrder.price = rs.getInt("price");
+         myOrder.ruleId = rs.getInt("rule_id");
+
+         return dbOrder;*/
+         return rs.getInt("discount");
+
+}
+
+
+rule "DBConnection"
+ when
+      order:Order(cardType == ConnectDB("com.mysql.cj.jdbc.Driver","jdbc:mysql://localhost:3306/drools","root","01MAY@gets",cardType))
+      //Order(order.cardType == ConnectDB("com.mysql.cj.jdbc.Driver","jdbc:mysql://localhost:3306/drools","root","01MAY@gets",order.cardType))
+ then
+   //order.discount = DBCollect("com.mysql.cj.jdbc.Driver","jdbc:mysql://localhost:3306/drools","root","01MAY@gets","IDFC");
+   System.out.println(DBCollect("com.mysql.cj.jdbc.Driver","jdbc:mysql://localhost:3306/drools","root","01MAY@gets","IDFC"));
+   //order.discount = DBCollect("com.mysql.cj.jdbc.Driver","jdbc:mysql://localhost:3306/drools","root","01MAY@gets","IDFC");
+   //order.setDiscount = 16;
+   //System.out.println(order.getDiscount);
+   System.out.println("Rule executed");
+end

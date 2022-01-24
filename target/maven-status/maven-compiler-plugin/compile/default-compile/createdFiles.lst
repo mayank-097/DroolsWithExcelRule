@@ -1,0 +1,7 @@
+App\Repository\CustomRuleRepo.class
+App\Entity\Order.class
+App\Config\DroolConfig.class
+App\SpringDroolsApplication.class
+App\Controller\MegaOfferController.class
+App\Config\DroolConfig$1.class
+App\Service\RuleService.class

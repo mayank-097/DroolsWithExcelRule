@@ -1,0 +1,10 @@
+import App.Entity.order;
+
+dialect "java"
+
+rule "demo rule"
+  when
+     order:Order(cardType == "HDFC")
+  then
+     System.out.println("Hello");
+end
